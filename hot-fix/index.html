@@ -41,12 +41,174 @@
 
 Hotfix for Android
 
-autor : 王令龙 <wanglinglong@u51.com>
+autor : 王令龙
 </script></section><section  data-markdown><script type="text/template">
 ## 目录
 
-- 爱的方式
--  大师傅</script></section></div>
+- 什么是热修复
+- 两大流派
+- Native 实现原理
+- Java 实现原理
+- 常见问题
+- 总结
+- Q&A
+
+</script></section><section ><section data-markdown><script type="text/template">
+## 什么是热修复
+
+无需重新安装，用户无感知的在线修复bug的一种技术
+</script></section><section data-markdown><script type="text/template">
+### 正常开发流程
+
+![](../assets/images/hot-fix/app_publish.png)
+
+- 重新发布版本代价太大
+- bug 修复不及时，体验差
+- 用户安装成本太高
+</script></section><section data-markdown><script type="text/template">
+### 热修复开发流程
+
+![](../assets/images/hot-fix/hotfix_publish.png)
+
+- 无需发版，效率高
+- 用户无感知，体验提升
+- 修复成功率高
+</script></section></section><section ><section data-markdown><script type="text/template">
+## 两大流派
+
+从不同维度可以分为不同的类型，我们从实现层级将其分为两大流派
+
+- Native
+- Java
+</script></section><section data-markdown><script type="text/template">
+### Native
+
+![](../assets/images/hot-fix/native.png)
+</script></section><section data-markdown><script type="text/template">
+### Java
+
+![](../assets/images/hot-fix/java.png)
+</script></section></section><section ><section data-markdown><script type="text/template">
+## Native 实现原理
+
+![](../assets/images/hot-fix/replace_method.jpg)
+</script></section><section data-markdown><script type="text/template">
+### AndFix 
+
+![](../assets/images/hot-fix/andfix1.png)
+
+- 优点：即时生效，性能损耗较小；足够轻量
+- 缺点：兼容性不佳；Native Crash 难调试；能力有限
+</script></section><section data-markdown><script type="text/template">
+### Hotfix 1.x
+
+![](../assets/images/hot-fix/hotfix.jpg)
+</script></section></section><section ><section data-markdown><script type="text/template">
+## java 实现原理
+
+![](../assets/images/hot-fix/java1.png)
+![](../assets/images/hot-fix/java2.png)
+</script></section><section data-markdown><script type="text/template">
+### PREVERIFY
+
+![](../assets/images/hot-fix/preverify.png)
+
+``Class ref in pre-verified class resolved to unexpected implementation``
+</script></section><section data-markdown><script type="text/template">
+### 
+
+``ART: classes(..N).dex -> 一个oat``
+
+``Dalvik: classes(..N).dex -> classes(..N).odex``
+
+```
+ClassObject* dvmResolveClass(const ClassObject* referrer, u4 classIdx,
+    bool fromUnverifiedConstant){
+....
+   if (!fromUnverifiedConstant &&
+        IS_CLASS_FLAG_SET(referrer, CLASS_ISPREVERIFIED)) {
+            ...
+            if (referrer->pDvmDex != resClassCheck->pDvmDex &&
+               resClassCheck->classLoader != NULL) {
+                 ALOGW("Class resolved by unexpected DEX:"..);
+               }
+        }
+...
+}
+```
+
+</script></section><section data-markdown><script type="text/template">
+### 
+
+![](../assets/images/hot-fix/preverify3.jpg)
+</script></section><section data-markdown><script type="text/template">
+### QZONE/Nuwa 插桩
+
+```
+public class A {
+    public A() {
+            System.out.println(AntilazyLoad.class);
+    }
+}
+```
+
+![](../assets/images/hot-fix/qzone-dalvik-end.png)
+
+在Art下无性能影响，但可能出现地址错乱，需要将修改了变量、方法以及接口的类的父类以及调用这个类的所有类都加入到补丁包中，会带来补丁包大小的急剧增加。
+</script></section><section data-markdown><script type="text/template">
+### Tinker
+
+![](../assets/images/hot-fix/tinker-patch.png)
+
+- 全量 dex 替换 + 反射隔离
+- 优点：稳定性较高，文档全面，可定制化度高
+- 缺点：没有官方的后台配套支持，接入稍微复杂
+</script></section><section data-markdown><script type="text/template">
+### HotFix 2.x
+
+HotFix1.x + Tinker + clearPreverify(Patch.class)
+
+- 优点：区分热修复和重启修复，安全验证，接入简单，配套服务全面
+- 缺点：用户不多，不太成熟，加固兼容性有待验证
+</script></section><section data-markdown><script type="text/template">
+### Robust
+
+![](../assets/images/hot-fix/robust4.png)
+
+- 基于 InstantRun 的热插拔方案
+- 优点：即时生效，性能损耗较小，兼容性最高。
+- 缺点：暂不支持资源修复，没有做安全校验。
+</script></section></section><section ><section data-markdown><script type="text/template">
+## 常见问题
+
+热修复不是请客吃饭
+</script></section><section data-markdown><script type="text/template">
+### 混合编译
+
+- Dalvik 启动 Multidex.install()
+- Art 安装应用 dex2oat 
+- Android N 为了提升体验所做的 dex2opt 优化
+- ~~AndFix~~
+- ~~HotFix1.x~~
+- ~~Nuwa~~
+</script></section><section data-markdown><script type="text/template">
+### 方法内联
+
+- Art 对 dex2oat 做的优化
+- A() -> B（）--> A(B())
+</script></section><section data-markdown><script type="text/template">
+### 加固兼容
+
+- 方法级的热修复方案基本无影响
+- class 级别的需要加固方案确认两点：不能提前导入类；Art平台如果编译oat文件需要将内联取消
+</script></section></section><section  data-markdown><script type="text/template">
+## 总结
+
+![](../assets/images/hot-fix/compare3.png)
+</script></section><section  data-markdown><script type="text/template">
+## Q&A
+
+Thank You</script></section></div>
 		</div>
 
 		<script src="../templates/revealjs/lib/js/head.min.js"></script>

@@ -1,0 +1,19 @@
+| 平台 | 阿里 AndFix | 阿里 HotFix1.x | 手Qzone | Tinker | Robust | 阿里 HotFix2.x|
+| :---: | :----: | :----: |:----: |:----: |:----: |:----: |:----: |		
+| 即时生效 | yes | yes | no | no | yes | 看情况 | ccccc |
+| 性能损耗 | 较小   | 较小  | 较小 | ccccc | ccccc | ccccc | ccccc |
+| Rom体积  | b      | c     | ccccc | ccccc | ccccc | ccccc | ccccc |
+| 接入复杂度 | b      | c     | ccccc | ccccc | ccccc | ccccc | ccccc |
+| 补丁包大小 | b      | c     | ccccc | ccccc | ccccc | ccccc | ccccc |
+| 安全校验   | b      | c     | ccccc | ccccc | ccccc | ccccc | ccccc |
+| 类替换    | b      | c     | ccccc | ccccc | ccccc | ccccc | ccccc |
+| 资源替换   | b      | c     | ccccc | ccccc | ccccc | ccccc | ccccc |
+| so替换    | b      | c     | ccccc | ccccc | ccccc | ccccc | ccccc |
+| 全平台支持 | b      | c     | ccccc | ccccc | ccccc | ccccc | ccccc |
+| 开发透明  | b      | c     | ccccc | ccccc | ccccc | ccccc | ccccc |
+| gradle支持| b      | c     | ccccc | ccccc | ccccc | ccccc | ccccc |
+| 接口文档   | b      | c     | ccccc | ccccc | ccccc | ccccc | ccccc |
+| 成功率    | b      | c     | ccccc | ccccc | ccccc | ccccc | ccccc |
+| 补丁管理  | b      | c     | ccccc | ccccc | ccccc | ccccc | ccccc |
+| 性能损耗  | b      | c     | ccccc | ccccc | ccccc | ccccc | ccccc |
+| 性能损耗  | b      | c     | ccccc | ccccc | ccccc | ccccc | ccccc |
