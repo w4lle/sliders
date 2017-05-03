@@ -2,7 +2,7 @@
 
 Hotfix for Android
 
-autor : 王令龙
+author : 王令龙
 
 ## 目录
 
