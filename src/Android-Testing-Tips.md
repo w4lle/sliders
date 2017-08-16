@@ -40,9 +40,9 @@ Android Crash 一般有：
 - ANR 应用无响应
 - Native Crash
 
-###
+### Android 异常
 
-Exception 运行时异常格式：Exceptin + message
+Exception 运行时异常格式：Exceptoin + message
 
 - 空指针异常 java.lang.NullPointerException
 - 数组越界异常 java.lang.IndexOutOfBoundsException
@@ -104,6 +104,8 @@ adb connect yourPhoneIp
 ## 好用的工具
 
 君欲善其事，必先利其器
+
+[wiki](http://wiki.51.nb/pages/viewpage.action?pageId=42763800)
 
 ### U51调试工具
 
