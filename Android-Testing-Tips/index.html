@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>测试开发技巧</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="../templates/revealjs/css/reveal.css">
+		<link rel="stylesheet" href="../templates/revealjs/css/theme/black.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="../templates/revealjs/lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? '../templates/revealjs/css/print/pdf.css' : '../templates/revealjs/css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+			<div class="slides"><section  data-markdown><script type="text/template"># 测试开发技巧
+
+基础技术组·客户端部
+
+王令龙
+</script></section><section  data-markdown><script type="text/template">
+## 目录
+
+- 解决问题步骤
+- 常见 Crash 分析
+- Tips
+- 好用的工具
+- Thanks
+</script></section><section ><section data-markdown><script type="text/template">
+## 一般步骤
+
+- 发现问题
+- 分析问题
+- 解决问题
+</script></section><section data-markdown><script type="text/template">
+### 
+
+![问题分析](../assets/images/android-testing-tips/problem.jpg)
+</script></section><section data-markdown><script type="text/template">
+### 优化后步骤
+
+- 发现问题
+- 界定问题：测试初步分析
+- 场景还原：保留问题环境
+- 分析问题
+- 解决问题
+- 回归测试：开发自测&测试回归
+</script></section></section><section ><section data-markdown><script type="text/template">
+## 常见问题分析
+</script></section><section data-markdown><script type="text/template">
+###  Crash 问题
+
+Android Crash 一般有：
+- Exception 运行时异常
+- ANR 应用无响应
+- Native Crash
+</script></section><section data-markdown><script type="text/template">
+###
+
+Exception 运行时异常格式：Exceptin + message
+
+- 空指针异常 java.lang.NullPointerException
+- 数组越界异常 java.lang.IndexOutOfBoundsException
+- 内存溢出  java.lang.OutOfMemoryError
+- 状态异常 java.lang.IllegalStateException
+- 等等
+</script></section><section data-markdown><script type="text/template">
+### 信息提示不对问题
+
+一般如果是后端返回的信息，接口返回中都会有
+如果没有可能就是客户端的提示或者 pg 方法的提示
+或者 log 中搜一下，一般接口数据和 pg 方法都有显示
+</script></section></section><section ><section data-markdown><script type="text/template">
+## Tips
+</script></section><section data-markdown><script type="text/template">
+### 确定问题
+
+- 确定问题类型，级别
+- 确定问题责任人
+</script></section><section data-markdown><script type="text/template">
+### 场景还原
+
+- 抓取 Log
+- 数据包
+- 录屏 or 截屏
+- 详细的描述
+- bug 分级
+</script></section><section data-markdown><script type="text/template">
+### 抓取 Log
+
+- Android:
+
+adb logcat -v time > xxx.txt //抓取全量 log 输出至指定文件
+
+开启无线调试模式抓取 Log
+
+adb tcpip 5555
+
+adb connect yourPhoneIp
+
+连接成功后即可拔掉数据线远程 adb 连接手机
+
+- iOS:
+
+需要下载工具，[下载地址](https://fir.im/tools/log_guru)
+</script></section><section data-markdown><script type="text/template">
+### 录屏
+
+- Android ：
+
+可以使用调试工具（侧边栏悬浮小虫子）工具中选择录屏工具，录屏记录操作步骤
+
+或者使用 AndroidTool-Mac 工具可以很方便的截屏和录屏 
+
+- iOS：
+
+使用 Mac 内置 QuickTimePlayer 工具，文件-新建屏幕录制
+</script></section></section><section ><section data-markdown><script type="text/template">
+## 好用的工具
+
+君欲善其事，必先利其器
+</script></section><section data-markdown><script type="text/template">
+### U51调试工具
+
+- [wiki](http://wiki.51.nb/pages/viewpage.action?pageId=36336658)
+</script></section><section data-markdown><script type="text/template">
+### AndroidTool
+
+![AndroidTool—Mac](../assets/images/android-testing-tips/androidtool.png)
+
+[下载地址](https://github.com/mortenjust/androidtool-mac/releases/download/1.66/AndroidTool.zip)
+</script></section><section data-markdown><script type="text/template">
+### 栈顶 Activity
+
+[下载地址](https://github.com/fashare2015/ActivityTracker)
+</script></section><section data-markdown><script type="text/template">
+### ADB
+
+- adb logcat -v time > xxx.txt
+- adb shell dumpsys activity activities | sed -En -e '/Running activities/,/Run #0/p'
+- adb install -r xxx.apk
+- adb uninstall com.zhangdan.app
+- adb kill-server
+- adb start-server
+- etc
+</script></section></section><section  data-markdown><script type="text/template">
+## Q&A
+
+Thanks
+</script></section></div>
+		</div>
+
+		<script src="../templates/revealjs/lib/js/head.min.js"></script>
+		<script src="../templates/revealjs/js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: '../templates/revealjs/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: '../templates/revealjs/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: '../templates/revealjs/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: '../templates/revealjs/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: '../templates/revealjs/plugin/zoom-js/zoom.js', async: true },
+					{ src: '../templates/revealjs/plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
