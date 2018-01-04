@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>协程</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="../templates/revealjs/css/reveal.css">
+		<link rel="stylesheet" href="../templates/revealjs/css/theme/black.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="../templates/revealjs/lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? '../templates/revealjs/css/print/pdf.css' : '../templates/revealjs/css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+			<div class="slides"><section  data-markdown><script type="text/template"># 协程
+
+author：王令龙
+</script></section><section  data-markdown><script type="text/template">
+## 协程概念
+
+协程 Coroutine，字面意思线程协作，完成异步任务。
+
+可以理解为使用线程挂起替代阻塞，无阻塞的异步编写方式。
+</script></section><section  data-markdown><script type="text/template">
+## 异步 or 异步
+
+var a = a +b 
+
+var result = loadImg()
+</script></section><section ><section data-markdown><script type="text/template">
+## 处理异步的方式
+</script></section><section data-markdown><script type="text/template">
+### 回调/监听 
+
+setOnclickListner(new OnclickListner() {
+    //do something
+})
+</script></section><section data-markdown><script type="text/template">
+### 通知 
+
+registe(this)
+onEvent(event) {
+    //do something
+}
+
+post(event)
+</script></section><section data-markdown><script type="text/template">
+### Promise 对象 / Rxjava
+</script></section><section data-markdown><script type="text/template">
+### 回调陷阱：
+
+```java
+readFile(fileA, function (err, data) {
+  loadImg(img, function (err, data) {
+    // ...
+  });
+});
+```
+</script></section><section data-markdown><script type="text/template">
+### Promise:
+
+```
+readFile(fileA)
+.then(function(data){
+  console.log(data.toString());
+})
+.then(function(){
+  return readFile(fileB);
+})
+```
+</script></section><section data-markdown><script type="text/template">
+### Rxjava:
+
+```java
+Obsevable<Response> ob = readFile();
+.map(new Func () {
+    // do something
+})
+ob.onNext(new Func () {
+    //do something
+})
+.then(xxx)
+.onComplete();
+```
+</script></section></section><section  data-markdown><script type="text/template">
+## 进程 线程 协程
+
+进程：切换耗资源，效率低，通信复杂
+线程：切换线程需要资源一般，效率一般，控制线程数
+协程：切换协程资源消耗小，效率高，写起来像同步，但是并不是适合所有场景
+</script></section><section ><section data-markdown><script type="text/template">
+## 举个🌰
+
+第一步，协程A开始执行。
+
+第二步，协程A执行到一半，进入暂停，执行权转移到协程B。
+
+第三步，（一段时间后）协程B交还执行权。
+
+第四步，协程A恢复执行。
+
+</script></section><section data-markdown><script type="text/template">
+### js 的 async 实现协程：
+
+```java
+var asyncReadFile = async function (){
+  var f1 = await readFile('/etc/fstab');
+  var f2 = await readFile('/etc/shells');
+  console.log(f1.toString());
+  console.log(f2.toString());
+};
+```
+</script></section><section data-markdown><script type="text/template">
+### 生产者消费者问题：
+
+```java
+import time
+def consumer():
+    r = ''
+    while True:
+        n = yield r
+        if not n:
+            return
+        print('[CONSUMER] Consuming %s...' % n)
+        time.sleep(1)
+        r = '200 OK'
+
+def produce(c):
+    c.next()
+    n = 0
+    while n < 5:
+        n = n + 1
+        print('[PRODUCER] Producing %s...' % n)
+        r = c.send(n)
+        print('[PRODUCER] Consumer return: %s' % r)
+    c.close()
+
+if __name__=='__main__':
+    c = consumer()
+    produce(c)
+```
+</script></section><section data-markdown><script type="text/template">
+### 线程切换对比
+</script></section><section data-markdown><script type="text/template">
+### 使用协程
+
+```java
+println("Coroutines: start")
+val jobs = List(100_000) {
+    // 创建新的coroutine
+    launch(CommonPool) {
+        // 挂起当前上下文而非阻塞1000ms
+        delay(1000L)
+        println("." + Thread.currentThread().name)
+    }
+}
+jobs.forEach { it.join() }
+println("Coroutines: end")
+println("No Coroutines: start")
+```
+</script></section><section data-markdown><script type="text/template">
+### 使用阻塞
+
+```java
+val noCoroutinesJobs = List(100_000) {
+    // 创建新的线程
+    thread {
+        // 阻塞
+        Thread.sleep(1000L)
+        println("." + Thread.currentThread().name)
+    }
+}
+noCoroutinesJobs.forEach { it.join() }
+println("No Coroutines: end")
+```
+
+在Nexus6P上：使用协程的大约在8s左右完成所有输出；而不使用协程的大约2min才完成所有输出
+
+</script></section></section></div>
+		</div>
+
+		<script src="../templates/revealjs/lib/js/head.min.js"></script>
+		<script src="../templates/revealjs/js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: '../templates/revealjs/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: '../templates/revealjs/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: '../templates/revealjs/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: '../templates/revealjs/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: '../templates/revealjs/plugin/zoom-js/zoom.js', async: true },
+					{ src: '../templates/revealjs/plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
